@@ -20,13 +20,13 @@ class UrlBusiness():
         self.setArticles = set()
 
 
-    def takeUrls(self, setNonVis:set) -> set:
+    def takeUrls(self, set_non_vis:set) -> set:
         setVis = self.file_dao.sync_set(self.fileVisitati)
-        setUrls = setNonVis.difference(setVis)
+        setUrls = set_non_vis.difference(setVis)
         for url in setUrls:
             self.file_dao.del_url(url, self.fileNonVisitati)
             try:
-                setNonVis = setNonVis.union(self.url_dao.getUrls(url))
+                setNonVis = set_non_vis.union(self.url_dao.getUrls(url))
             except:
                 continue
             self.file_dao.add_url(url, self.fileVisitati)
@@ -38,11 +38,11 @@ class UrlBusiness():
 
         print('lunghezza set articoli: ', len(self.setArticles))
         print(self.setArticles)
-        print(len(setNonVis))
-        setNonVis.difference_update(setUrls)
-        print(len(setNonVis))
-        self.file_dao.sync_file(setNonVis, self.fileNonVisitati)
-        return setNonVis
+        print(len(set_non_vis))
+        set_non_vis.difference_update(setUrls)
+        print(len(set_non_vis))
+        self.file_dao.sync_file(set_non_vis, self.fileNonVisitati)
+        return set_non_vis
 
 
 
@@ -51,14 +51,14 @@ class UrlBusiness():
 
     def goDeep(self, livello:int, url:str = ""):
         if url:
-            setNonVis = self.url_dao.getUrls(url)
-            self.file_dao.sync_file(setNonVis, self.fileNonVisitati)
+            set_non_vis = self.url_dao.getUrls(url)
+            self.file_dao.sync_file(set_non_vis, self.fileNonVisitati)
         else:
-            setNonVis = self.file_dao.sync_set(self.fileNonVisitati)
-        print(len(setNonVis))
-        print(setNonVis)
+            set_non_vis = self.file_dao.sync_set(self.fileNonVisitati)
+        print(len(set_non_vis))
+        print(set_non_vis)
         while livello>0:
-            setNonVis = self.takeUrls(setNonVis)
+            setNonVis = self.takeUrls(set_non_vis)
             livello -= 1
 
         return self.setArticles
